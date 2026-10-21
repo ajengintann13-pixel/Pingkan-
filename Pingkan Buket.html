@@ -1,0 +1,861 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Pingkan Buket</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Jost:wght@300..600&family=Pinyon+Script&display=swap">
+<style>
+/* Layout: hero asimetris (teks kiri, lengkungan buket kanan) -> momen -> koleksi 6 kartu -> penyusun pesanan dengan pratinjau papan -> 4 langkah -> penutup. */
+:root {
+  --display: "Bodoni Moda", Georgia, "Times New Roman", serif;
+  --script: "Pinyon Script", "Brush Script MT", cursive;
+  --body: "Jost", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --bg: #fff5f6;
+  --bg-soft: #ffe9ee;
+  --surface: #ffffff;
+  --fg: #3a1323;
+  --muted: #7a5665;
+  --accent: #b1204f;
+  --accent-fg: #ffffff;
+  --gold: #a8742a;
+  --line: rgba(122, 32, 64, .14);
+  --shadow: rgba(122, 32, 64, .45);
+  --glow1: #ffd5df;
+  --glow2: #ffe9d9;
+  --tile1: #ffe3e8;
+  --tile2: #fde0ec;
+  --tile3: #e6f1e4;
+  --tile4: #efe3f7;
+  --tile5: #ffe9d4;
+  --tile-b: #ffe3ea;
+  --arch1: #ffd3de;
+  --arch2: #ffeef1;
+  --panel-bg: #7d1740;
+  --panel-fg: #fff1f4;
+  --panel-btn: #ffffff;
+  --panel-btn-fg: #7d1740;
+  --pt: #f4a3b8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #190a12; --bg-soft: #26101b; --surface: #2a1420; --fg: #fbe8ee; --muted: #cfa6b5;
+    --accent: #f2729a; --accent-fg: #2a0b17; --gold: #e6bb6a; --line: rgba(255, 205, 220, .15);
+    --shadow: rgba(0, 0, 0, .7); --glow1: #4a1630; --glow2: #351822;
+    --tile1: #43202e; --tile2: #46203a; --tile3: #243a2c; --tile4: #392447; --tile5: #46301f; --tile-b: #43202e;
+    --arch1: #5a2540; --arch2: #2f1522;
+    --panel-bg: #4a1630; --panel-fg: #ffe9ef; --panel-btn: #f2729a; --panel-btn-fg: #2a0b17;
+    --pt: #f08aa8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #190a12; --bg-soft: #26101b; --surface: #2a1420; --fg: #fbe8ee; --muted: #cfa6b5;
+  --accent: #f2729a; --accent-fg: #2a0b17; --gold: #e6bb6a; --line: rgba(255, 205, 220, .15);
+  --shadow: rgba(0, 0, 0, .7); --glow1: #4a1630; --glow2: #351822;
+  --tile1: #43202e; --tile2: #46203a; --tile3: #243a2c; --tile4: #392447; --tile5: #46301f; --tile-b: #43202e;
+  --arch1: #5a2540; --arch2: #2f1522;
+  --panel-bg: #4a1630; --panel-fg: #ffe9ef; --panel-btn: #f2729a; --panel-btn-fg: #2a0b17;
+  --pt: #f08aa8;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--fg);
+  background:
+    radial-gradient(900px 520px at 88% -4%, var(--glow1), transparent 62%),
+    radial-gradient(720px 520px at -8% 34%, var(--glow2), transparent 62%),
+    var(--bg);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 110px;
+  overflow-x: hidden;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 40; background: var(--bg);
+}
+.wrap { width: 100%; max-width: 1160px; margin-inline: auto; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- header ---------- */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+}
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo svg { width: 38px; height: 38px; flex: none; }
+.logo b { font-family: var(--script); font-weight: 400; font-size: 2rem; line-height: 1; color: var(--accent); }
+.logo small { display: block; font-size: .64rem; letter-spacing: .32em; text-transform: uppercase; color: var(--gold); margin-top: 2px; }
+.nav { display: flex; align-items: center; gap: 26px; }
+.nav a.l { text-decoration: none; font-size: .95rem; color: var(--muted); transition: color .2s; }
+.nav a.l:hover { color: var(--accent); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 14px 26px; border-radius: 999px; border: 1px solid transparent;
+  font: 500 1rem/1 var(--body); letter-spacing: .01em; text-decoration: none; cursor: pointer;
+  transition: transform .25s, box-shadow .25s, background .25s;
+}
+.btn.p { background: var(--accent); color: var(--accent-fg); box-shadow: 0 12px 28px -12px var(--shadow); }
+.btn.p:hover { transform: translateY(-2px); box-shadow: 0 18px 34px -12px var(--shadow); }
+.btn.s { border-color: var(--line); background: transparent; color: var(--fg); }
+.btn.s:hover { background: var(--bg-soft); }
+.btn.sm { padding: 11px 20px; font-size: .92rem; }
+.btn svg { width: 18px; height: 18px; flex: none; }
+
+/* ---------- hero ---------- */
+.hero {
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: clamp(28px, 5vw, 70px); align-items: center;
+  padding-block: clamp(20px, 4vw, 52px) clamp(24px, 4vw, 40px);
+}
+.eyebrow { display: inline-flex; align-items: center; gap: 12px; font-size: .78rem; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); }
+.eyebrow::before { content: ""; width: 34px; height: 1px; background: var(--gold); }
+h1 {
+  font-family: var(--display); font-weight: 500; letter-spacing: -.02em; line-height: 1.02;
+  font-size: clamp(2.6rem, 6.3vw, 5rem); margin: 18px 0 20px; text-wrap: balance;
+}
+h1 em { font-style: italic; color: var(--accent); font-weight: 450; }
+.lead { font-size: clamp(1.02rem, 1.7vw, 1.2rem); color: var(--muted); max-width: 52ch; margin: 0 0 30px; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.mini { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 34px; color: var(--muted); font-size: .92rem; }
+.mini span::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); margin-right: 9px; vertical-align: middle; }
+
+.arch-wrap { position: relative; max-width: 470px; width: 100%; margin-inline: auto; }
+.arch {
+  position: relative; aspect-ratio: 480 / 560; border-radius: 999px 999px 30px 30px;
+  background: linear-gradient(170deg, var(--arch1), var(--arch2));
+}
+.arch::after {
+  content: ""; position: absolute; inset: -11px; border: 1px solid var(--gold);
+  border-radius: 999px 999px 40px 40px; opacity: .7; pointer-events: none;
+}
+.arch > svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+.petals { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; }
+.petal { position: absolute; width: 16px; height: 22px; border-radius: 70% 0 70% 70%; background: var(--pt); opacity: .85; }
+.petal:nth-child(1) { left: 14%; top: 12%; }
+.petal:nth-child(2) { left: 78%; top: 22%; width: 12px; height: 17px; }
+.petal:nth-child(3) { left: 30%; top: 40%; width: 13px; height: 18px; }
+.petal:nth-child(4) { left: 88%; top: 52%; }
+.petal:nth-child(5) { left: 8%; top: 62%; width: 12px; height: 17px; }
+.petal:nth-child(6) { left: 60%; top: 8%; width: 11px; height: 15px; }
+@media (prefers-reduced-motion: no-preference) {
+  .petal { animation: fall 11s linear infinite; }
+  .petal:nth-child(2) { animation-duration: 14s; animation-delay: -4s; }
+  .petal:nth-child(3) { animation-duration: 12s; animation-delay: -7s; }
+  .petal:nth-child(4) { animation-duration: 16s; animation-delay: -2s; }
+  .petal:nth-child(5) { animation-duration: 13s; animation-delay: -9s; }
+  .petal:nth-child(6) { animation-duration: 15s; animation-delay: -5s; }
+  @keyframes fall {
+    from { transform: translate(0, -10%) rotate(0deg); }
+    50% { transform: translate(24px, 220%) rotate(150deg); }
+    to { transform: translate(-10px, 460%) rotate(300deg); }
+  }
+  .arch > svg { animation: sway 7s ease-in-out infinite; transform-origin: 50% 90%; }
+  @keyframes sway { 0%, 100% { transform: rotate(-.8deg); } 50% { transform: rotate(.8deg); } }
+  .badge svg.spin { animation: spin 26s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+}
+.badge {
+  position: absolute; z-index: 2; right: 3%; bottom: 7%; width: 112px; height: 112px;
+  border-radius: 50%; background: var(--surface); border: 1px solid var(--line);
+  display: grid; place-items: center; box-shadow: 0 16px 34px -16px var(--shadow);
+}
+.badge svg { width: 100%; height: 100%; }
+.badge .core { position: absolute; width: 38px; height: 38px; }
+
+/* ---------- occasions ---------- */
+.occ { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-block: 10px 6px; }
+.occ > span { font-size: .78rem; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); margin-right: 8px; }
+.pill { padding: 8px 16px; border: 1px solid var(--line); border-radius: 999px; font-size: .92rem; background: var(--surface); }
+
+/* ---------- sections ---------- */
+section { scroll-margin-top: 84px; padding-block: clamp(44px, 7vw, 88px) 0; }
+.sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px 40px; margin-bottom: 34px; }
+h2 { font-family: var(--display); font-weight: 500; font-size: clamp(2rem, 4.6vw, 3.3rem); line-height: 1.06; letter-spacing: -.015em; margin: 12px 0 0; text-wrap: balance; }
+h2 em { font-style: italic; color: var(--accent); font-weight: 450; }
+.sec-head p { margin: 0; max-width: 40ch; color: var(--muted); }
+
+/* ---------- collection ---------- */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 24px; }
+.card {
+  display: flex; flex-direction: column; min-width: 0; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 26px;
+  transition: transform .35s, box-shadow .35s;
+}
+.card:hover { transform: translateY(-6px); box-shadow: 0 28px 52px -28px var(--shadow); }
+.art { aspect-ratio: 1 / 1; display: grid; place-items: center; padding: 20px; }
+.art svg { width: 100%; height: 100%; max-width: 310px; transition: transform .5s; }
+.card:hover .art svg { transform: scale(1.05) rotate(-1.2deg); }
+.t1 { background: var(--tile1); } .t2 { background: var(--tile2); } .t3 { background: var(--tile3); }
+.t4 { background: var(--tile4); } .t5 { background: var(--tile5); }
+.card .body { display: flex; flex-direction: column; gap: 10px; padding: 22px 24px 26px; flex: 1; }
+.kicker { font-size: .72rem; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); }
+.card h3 { font-family: var(--display); font-weight: 500; font-size: 1.65rem; line-height: 1.15; margin: 0; }
+.card p { margin: 0; color: var(--muted); font-size: .98rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.chips span { font-size: .78rem; padding: 4px 11px; border-radius: 999px; background: var(--bg-soft); color: var(--muted); }
+.more { margin-top: auto; padding-top: 12px; display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-weight: 500; text-decoration: none; }
+.more span { transition: transform .25s; }
+.more:hover span { transform: translateX(5px); }
+.card.custom { background: transparent; border-style: dashed; border-width: 1.5px; justify-content: center; }
+.card.custom .art { background: transparent; aspect-ratio: auto; padding: 30px 20px 0; }
+.card.custom .art svg { max-width: 190px; }
+
+/* ---------- order builder ---------- */
+.build {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .92fr); gap: clamp(24px, 4vw, 48px);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 34px; padding: clamp(20px, 4vw, 46px);
+}
+.form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-content: start; }
+.form .full { grid-column: 1 / -1; }
+.field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.field label { font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.field input, .field select, .field textarea {
+  width: 100%; font: 400 16px/1.4 var(--body); color: var(--fg); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 14px; padding: 13px 15px; min-width: 0;
+  transition: border-color .2s, box-shadow .2s;
+}
+.field textarea { resize: vertical; min-height: 92px; }
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.hint { font-size: .8rem; color: var(--muted); text-align: right; }
+.stage { background: var(--tile-b); border-radius: 26px; padding: clamp(18px, 3vw, 28px); display: flex; flex-direction: column; align-items: center; gap: 18px; min-width: 0; }
+.board {
+  position: relative; width: min(100%, 290px); aspect-ratio: 3 / 4; background: #fffdf9;
+  border: 6px double #c9973f; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 30px 26px; gap: 8px; box-shadow: 0 22px 40px -22px rgba(80, 20, 40, .55); color: #5a2236;
+}
+.board .rose-c { position: absolute; width: 74px; height: 74px; }
+.board .rc1 { left: -22px; top: -22px; } .board .rc2 { right: -22px; bottom: -22px; }
+.board .rc3 { right: -10px; top: -14px; width: 50px; height: 50px; } .board .rc4 { left: -12px; bottom: -14px; width: 50px; height: 50px; }
+.board .bh { font-family: var(--script); font-size: 2.15rem; line-height: 1.02; color: #b1204f; text-wrap: balance; }
+.board .rule { width: 56px; height: 1px; background: #c9973f; margin: 2px 0; }
+.board .bt { font-family: var(--display); font-style: italic; font-size: 1.02rem; line-height: 1.35; overflow-wrap: anywhere; }
+.board .bt.sm { font-size: .88rem; } .board .bt.xs { font-size: .78rem; }
+.board .bt.ph { opacity: .45; }
+.board .bf { font-size: .7rem; letter-spacing: .22em; text-transform: uppercase; color: #8c6a2c; margin-top: 6px; overflow-wrap: anywhere; }
+.msgbox { width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; }
+.msgbox pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 400 .88rem/1.55 var(--body); color: var(--muted); max-height: 190px; overflow: auto; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; }
+.actions .btn { flex: 1 1 170px; }
+
+/* ---------- steps ---------- */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 22px; margin: 0; padding: 0; list-style: none; counter-reset: s; }
+.steps li { position: relative; padding: 26px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; counter-increment: s; }
+.steps li::before {
+  content: counter(s); display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--bg-soft); color: var(--accent); font: italic 500 1.4rem var(--display); margin-bottom: 14px;
+}
+.steps h3 { font-family: var(--display); font-weight: 500; font-size: 1.3rem; margin: 0 0 6px; }
+.steps p { margin: 0; color: var(--muted); font-size: .96rem; }
+
+/* ---------- closing ---------- */
+.closing {
+  margin-top: clamp(44px, 7vw, 88px); border-radius: 36px; padding: clamp(32px, 6vw, 72px);
+  background: var(--panel-bg); color: var(--panel-fg);
+  display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 30px; align-items: center; position: relative; overflow: hidden;
+}
+.closing h2 { margin: 0 0 14px; font-size: clamp(2rem, 4.6vw, 3.2rem); }
+.closing h2 em { color: inherit; opacity: .78; }
+.closing p { margin: 0 0 24px; opacity: .85; max-width: 46ch; }
+.closing .btn { background: var(--panel-btn); color: var(--panel-btn-fg); }
+.closing .art2 { display: grid; place-items: center; }
+.closing .art2 svg { width: min(100%, 250px); opacity: .95; }
+
+footer { padding-block: 40px 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px 30px; color: var(--muted); font-size: .9rem; }
+footer .fl { font-family: var(--script); font-size: 1.9rem; color: var(--accent); line-height: 1; }
+
+.fab {
+  position: fixed; z-index: 35;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 18px 36px -12px var(--shadow);
+}
+
+@media (max-width: 860px) {
+  .hero, .build, .closing { grid-template-columns: minmax(0, 1fr); }
+  .nav a.l { display: none; }
+  .arch-wrap { max-width: 400px; }
+  .closing .art2 { display: none; }
+}
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  .form { grid-template-columns: minmax(0, 1fr); }
+  .logo b { font-size: 1.75rem; }
+  .top .btn { padding: 10px 16px; font-size: .88rem; }
+  .badge { width: 92px; height: 92px; }
+  .badge .core { width: 30px; height: 30px; }
+}
+
+/* ---------- illustration palettes ---------- */
+.c-pink { --r1: #f08aa5; --r2: #e0678a; --r3: #bd4268; }
+.c-red { --r1: #d93a58; --r2: #bf2646; --r3: #8f1632; }
+.c-blush { --r1: #ffd0da; --r2: #f8b4c3; --r3: #e48fa4; }
+.c-cream { --r1: #fff1dc; --r2: #f7dcb6; --r3: #e5bd86; }
+.c-lilac { --r1: #cdb5ec; --r2: #b497dc; --r3: #8f6fbd; }
+.c-peach { --r1: #ffb99a; --r2: #f99b78; --r3: #e07651; }
+.c-sky { --r1: #a9cdf0; --r2: #86b3e0; --r3: #5f90c4; }
+.c-gold { --r1: #f1cf7c; --r2: #e0b455; --r3: #bd8f2c; }
+.c-white { --r1: #fffaf8; --r2: #efe0e2; --r3: #e6b84e; }
+.m-red { --r1: #e0657a; --r2: #c9435c; --r3: #962037; }
+.m-blue { --r1: #6c9fdc; --r2: #4a7fc2; --r3: #2c559a; }
+.m-green { --r1: #8fcf9f; --r2: #68b57e; --r3: #3f8a58; }
+.n-red { --n1: #d9556a; --n2: #8f2037; }
+.n-blue { --n1: #5b8fd0; --n2: #27508f; }
+.n-green { --n1: #7cbf8e; --n2: #2f7a4a; }
+</style>
+
+<!-- shared illustration parts -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="rose" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="var(--r2)"/>
+      <path d="M50 6 C82 9 96 40 89 63 C82 86 56 96 36 89 C13 81 6 52 17 31 C25 15 40 6 50 6Z" fill="var(--r1)"/>
+      <path d="M50 21 C73 21 83 42 78 59 C73 75 54 81 40 76 C23 70 19 50 27 38 C33 28 42 21 50 21Z" fill="var(--r2)"/>
+      <path d="M50 33 C65 33 71 46 67 56 C63 67 50 69 42 65 C33 60 32 48 37 42 C41 36 46 33 50 33Z" fill="var(--r1)"/>
+      <path d="M50 44 C58 43 62 50 59 55 C55 61 47 61 44 56 C41 52 43 46 50 44Z" fill="var(--r3)"/>
+      <path d="M28 30 C37 21 52 19 62 24" stroke="var(--r3)" stroke-width="2.4" fill="none" opacity=".35" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ribrose" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="var(--r1)"/>
+      <path d="M50 16 a34 34 0 1 1 -34 34" fill="none" stroke="var(--r2)" stroke-width="8" stroke-linecap="round"/>
+      <path d="M50 28 a22 22 0 1 1 -22 22" fill="none" stroke="var(--r3)" stroke-width="7" stroke-linecap="round"/>
+      <path d="M50 40 a10 10 0 1 1 -10 10" fill="none" stroke="var(--r2)" stroke-width="6" stroke-linecap="round"/>
+      <ellipse cx="33" cy="29" rx="15" ry="6.5" transform="rotate(-38 33 29)" fill="#fff" opacity=".4"/>
+    </symbol>
+    <symbol id="daisy" viewBox="0 0 100 100">
+      <g fill="var(--r1)" stroke="var(--r2)" stroke-width="1.5">
+        <ellipse cx="50" cy="22" rx="10" ry="20"/>
+        <ellipse cx="50" cy="22" rx="10" ry="20" transform="rotate(45 50 50)"/>
+        <ellipse cx="50" cy="22" rx="10" ry="20" transform="rotate(90 50 50)"/>
+        <ellipse cx="50" cy="22" rx="10" ry="20" transform="rotate(135 50 50)"/>
+        <ellipse cx="50" cy="22" rx="10" ry="20" transform="rotate(180 50 50)"/>
+        <ellipse cx="50" cy="22" rx="10" ry="20" transform="rotate(225 50 50)"/>
+        <ellipse cx="50" cy="22" rx="10" ry="20" transform="rotate(270 50 50)"/>
+        <ellipse cx="50" cy="22" rx="10" ry="20" transform="rotate(315 50 50)"/>
+      </g>
+      <circle cx="50" cy="50" r="13" fill="var(--r3)"/>
+    </symbol>
+    <symbol id="leaf" viewBox="0 0 40 80">
+      <path d="M20 79 C0 58 1 22 20 1 C39 22 40 58 20 79Z" fill="var(--leaf, #4f9a62)"/>
+      <path d="M20 77 V10" stroke="#fff" stroke-opacity=".35" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="note" viewBox="0 0 120 60">
+      <rect width="120" height="60" rx="5" fill="var(--n1)"/>
+      <rect x="5" y="5" width="110" height="50" rx="3" fill="none" stroke="var(--n2)" stroke-width="1.5"/>
+      <circle cx="60" cy="30" r="14" fill="var(--n2)" opacity=".45"/>
+      <circle cx="60" cy="30" r="9" fill="none" stroke="var(--n2)" stroke-width="1.5"/>
+      <path d="M14 14h22M14 21h14M84 40h22M92 47h14" stroke="var(--n2)" stroke-width="2" opacity=".55"/>
+    </symbol>
+    <symbol id="spark" viewBox="-12 -12 24 24">
+      <path d="M0-11 Q0 0 11 0 Q0 0 0 11 Q0 0 -11 0 Q0 0 0 -11Z" fill="#d6a640"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#atas" aria-label="Pingkan Buket, ke atas">
+      <svg viewBox="0 0 100 100" aria-hidden="true" class="c-pink"><use href="#rose" width="100" height="100"/></svg>
+      <span><b>Pingkan</b><small>Buket</small></span>
+    </a>
+    <nav class="nav" aria-label="Menu utama">
+      <a class="l" href="#koleksi">Koleksi</a>
+      <a class="l" href="#pesan">Susun pesanan</a>
+      <a class="l" href="#cara">Cara pesan</a>
+      <a class="btn p sm" data-wa="Halo Pingkan Buket, saya mau tanya-tanya soal buket." href="https://wa.me/" target="_blank" rel="noopener">Chat WhatsApp</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="atas">
+  <div class="hero">
+    <div>
+      <span class="eyebrow">Buket uang · Pita satin · Artificial</span>
+      <h1>Buket cantik untuk setiap momen <em>berharga</em></h1>
+      <p class="lead">Buket uang, buket pita satin, buket artificial, karangan bunga, dan papan ucapan. Dirangkai rapi supaya penerimanya tersenyum sejak pertama membuka.</p>
+      <div class="cta">
+        <a class="btn p" data-wa="Halo Pingkan Buket, saya mau pesan buket. Boleh minta info lengkapnya?" href="https://wa.me/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.3 7.6L3 21l1.5-5.4A8.5 8.5 0 1 1 21 12Z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg>
+          Pesan lewat WhatsApp
+        </a>
+        <a class="btn s" href="#koleksi">Lihat koleksi</a>
+      </div>
+      <div class="mini"><span>Warna dan tulisan bisa diatur</span><span>Cocok untuk hadiah dan acara</span></div>
+    </div>
+
+    <div class="arch-wrap">
+      <div class="arch">
+        <div class="petals" aria-hidden="true"><i class="petal"></i><i class="petal"></i><i class="petal"></i><i class="petal"></i><i class="petal"></i><i class="petal"></i></div>
+        <svg viewBox="0 0 480 520" role="img" aria-label="Ilustrasi buket mawar merah muda dengan pita emas">
+          <use href="#leaf" x="205" y="200" width="70" height="130" transform="rotate(-64 240 330)" style="--leaf:#3f8a55"/>
+          <use href="#leaf" x="205" y="200" width="70" height="130" transform="rotate(64 240 330)" style="--leaf:#3f8a55"/>
+          <use href="#leaf" x="205" y="190" width="70" height="140" transform="rotate(-42 240 330)" style="--leaf:#5aa56c"/>
+          <use href="#leaf" x="205" y="190" width="70" height="140" transform="rotate(42 240 330)" style="--leaf:#5aa56c"/>
+          <use href="#leaf" x="205" y="180" width="70" height="150" transform="rotate(-20 240 330)" style="--leaf:#3f8a55"/>
+          <use href="#leaf" x="205" y="180" width="70" height="150" transform="rotate(20 240 330)" style="--leaf:#3f8a55"/>
+          <path d="M118 300 Q240 266 362 300 L292 500 Q240 516 188 500Z" fill="#ffd9e1"/>
+          <use href="#rose" class="c-lilac" x="82" y="102" width="76" height="76"/>
+          <use href="#rose" class="c-white" x="324" y="112" width="76" height="76"/>
+          <use href="#rose" class="c-pink" x="94" y="159" width="112" height="112"/>
+          <use href="#rose" class="c-blush" x="274" y="159" width="112" height="112"/>
+          <use href="#rose" class="c-red" x="175" y="104" width="130" height="130"/>
+          <use href="#rose" class="c-cream" x="145" y="226" width="100" height="100"/>
+          <use href="#rose" class="c-peach" x="237" y="228" width="100" height="100"/>
+          <use href="#rose" class="c-pink" x="200" y="236" width="82" height="82"/>
+          <g fill="#fff">
+            <circle cx="112" cy="196" r="4"/><circle cx="98" cy="226" r="3"/><circle cx="382" cy="186" r="4"/><circle cx="394" cy="226" r="3"/>
+            <circle cx="240" cy="62" r="4"/><circle cx="206" cy="74" r="3"/><circle cx="278" cy="72" r="3"/><circle cx="160" cy="84" r="4"/><circle cx="322" cy="92" r="3"/>
+            <circle cx="70" cy="170" r="3"/><circle cx="414" cy="150" r="3"/>
+          </g>
+          <path d="M148 330 Q240 310 332 330 L278 508 Q240 518 202 508Z" fill="#fff6f2"/>
+          <path d="M190 336 L226 500 M290 336 L254 500" stroke="#f3d4dc" stroke-width="2" fill="none"/>
+          <path d="M172 398 Q240 414 308 398 L302 420 Q240 436 178 420Z" fill="#d6a640"/>
+          <path d="M240 414 C196 376 168 420 196 440 C214 452 236 438 240 414Z" fill="#e3b85a"/>
+          <path d="M240 414 C284 376 312 420 284 440 C266 452 244 438 240 414Z" fill="#e3b85a"/>
+          <path d="M236 424 L212 482 L230 474 L238 490Z" fill="#c9973f"/>
+          <path d="M244 424 L268 482 L250 474 L242 490Z" fill="#c9973f"/>
+          <circle cx="240" cy="418" r="12" fill="#d6a640"/>
+          <use href="#spark" x="60" y="70" width="28" height="28"/>
+          <use href="#spark" x="396" y="64" width="22" height="22"/>
+          <use href="#spark" x="410" y="270" width="16" height="16"/>
+        </svg>
+      </div>
+      <div class="badge">
+        <svg class="spin" viewBox="0 0 120 120" aria-hidden="true">
+          <defs><path id="circ" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0"/></defs>
+          <text font-family="Jost, sans-serif" font-size="10.5" letter-spacing="3.2" fill="var(--gold)" font-weight="500">
+            <textPath href="#circ">DIRANGKAI DENGAN CINTA · PINGKAN BUKET ·</textPath>
+          </text>
+        </svg>
+        <svg class="core c-pink" viewBox="0 0 100 100" aria-hidden="true"><use href="#rose" width="100" height="100"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="occ" aria-label="Momen yang dilayani">
+    <span>Untuk momen</span>
+    <i class="pill" style="font-style:normal">Wisuda</i>
+    <i class="pill" style="font-style:normal">Ulang tahun</i>
+    <i class="pill" style="font-style:normal">Anniversary</i>
+    <i class="pill" style="font-style:normal">Pernikahan</i>
+    <i class="pill" style="font-style:normal">Lamaran</i>
+    <i class="pill" style="font-style:normal">Grand opening</i>
+    <i class="pill" style="font-style:normal">Duka cita</i>
+  </div>
+
+  <section id="koleksi">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow">Koleksi</span>
+        <h2>Pilih yang paling <em>pas</em> untuk dia</h2>
+      </div>
+      <p>Lima jenis rangkaian andalan. Belum ketemu yang cocok? Ceritakan idenya, kami bantu wujudkan.</p>
+    </div>
+
+    <div class="grid">
+      <article class="card">
+        <div class="art t1">
+          <svg viewBox="0 0 300 340" role="img" aria-label="Ilustrasi buket uang">
+            <g transform="rotate(-27 150 170)"><use href="#note" class="n-blue" x="88" y="46" width="124" height="62"/></g>
+            <g transform="rotate(25 150 170)"><use href="#note" class="n-green" x="88" y="46" width="124" height="62"/></g>
+            <g transform="rotate(-5 150 170)"><use href="#note" class="n-red" x="88" y="34" width="124" height="62"/></g>
+            <g stroke="#4f9a62" stroke-width="5" stroke-linecap="round" fill="none">
+              <path d="M150 250 L150 110"/><path d="M150 250 L92 150"/><path d="M150 250 L208 150"/><path d="M150 250 L120 180"/><path d="M150 250 L182 180"/>
+            </g>
+            <use href="#ribrose" class="m-blue" x="56" y="114" width="72" height="72"/>
+            <use href="#ribrose" class="m-green" x="172" y="114" width="72" height="72"/>
+            <use href="#ribrose" class="m-red" x="108" y="58" width="84" height="84"/>
+            <use href="#ribrose" class="m-green" x="84" y="142" width="70" height="70"/>
+            <use href="#ribrose" class="m-blue" x="146" y="144" width="70" height="70"/>
+            <path d="M62 178 Q150 150 238 178 L178 318 Q150 330 122 318Z" fill="#ffc9d6"/>
+            <path d="M84 202 Q150 184 216 202 L170 322 Q150 332 130 322Z" fill="#fffaf6"/>
+            <path d="M102 248 Q150 264 198 248 L194 266 Q150 282 106 266Z" fill="#d6a640"/>
+            <path d="M150 262 C124 238 108 262 124 274 C136 282 148 276 150 262Z" fill="#e3b85a"/>
+            <path d="M150 262 C176 238 192 262 176 274 C164 282 152 276 150 262Z" fill="#e3b85a"/>
+            <circle cx="150" cy="262" r="7" fill="#c9973f"/>
+            <use href="#spark" x="40" y="60" width="22" height="22"/><use href="#spark" x="244" y="82" width="18" height="18"/>
+          </svg>
+        </div>
+        <div class="body">
+          <span class="kicker">Buket Uang</span>
+          <h3>Hadiah yang selalu terpakai</h3>
+          <p>Uang tunai dilipat dan dirangkai menjadi bunga, lalu dibungkus rapi dengan pita emas.</p>
+          <div class="chips"><span>Wisuda</span><span>Ulang tahun</span><span>Pernikahan</span></div>
+          <a class="more" href="#pesan" data-product="Buket Uang">Pesan model ini <span>→</span></a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="art t2">
+          <svg viewBox="0 0 300 340" role="img" aria-label="Ilustrasi buket pita satin">
+            <use href="#leaf" x="125" y="150" width="50" height="100" transform="rotate(-58 150 250)" style="--leaf:#6fae7e"/>
+            <use href="#leaf" x="125" y="150" width="50" height="100" transform="rotate(58 150 250)" style="--leaf:#6fae7e"/>
+            <use href="#leaf" x="125" y="140" width="50" height="110" transform="rotate(-34 150 250)" style="--leaf:#4f9a62"/>
+            <use href="#leaf" x="125" y="140" width="50" height="110" transform="rotate(34 150 250)" style="--leaf:#4f9a62"/>
+            <use href="#ribrose" class="c-lilac" x="56" y="104" width="76" height="76"/>
+            <use href="#ribrose" class="c-peach" x="168" y="104" width="76" height="76"/>
+            <use href="#ribrose" class="c-pink" x="108" y="54" width="86" height="86"/>
+            <use href="#ribrose" class="c-sky" x="146" y="144" width="72" height="72"/>
+            <use href="#ribrose" class="c-blush" x="82" y="144" width="72" height="72"/>
+            <use href="#ribrose" class="c-cream" x="112" y="124" width="76" height="76"/>
+            <path d="M62 190 Q150 160 238 190 L178 318 Q150 330 122 318Z" fill="#fff"/>
+            <path d="M84 208 Q150 192 216 208 L170 322 Q150 332 130 322Z" fill="#ffd6e2"/>
+            <path d="M150 238 C96 190 78 252 112 276 C132 288 148 268 150 238Z" fill="#ef7a9d"/>
+            <path d="M150 238 C204 190 222 252 188 276 C168 288 152 268 150 238Z" fill="#ef7a9d"/>
+            <path d="M104 236 C94 250 100 264 112 270" stroke="#fff" stroke-opacity=".5" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M196 236 C206 250 200 264 188 270" stroke="#fff" stroke-opacity=".5" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M144 256 L116 322 L136 314 L146 332Z" fill="#df5c84"/>
+            <path d="M156 256 L184 322 L164 314 L154 332Z" fill="#df5c84"/>
+            <circle cx="150" cy="248" r="12" fill="#e8688e"/>
+            <use href="#spark" x="46" y="70" width="20" height="20"/><use href="#spark" x="240" y="60" width="24" height="24"/>
+          </svg>
+        </div>
+        <div class="body">
+          <span class="kicker">Buket Pita Satin</span>
+          <h3>Mawar pita yang tak pernah layu</h3>
+          <p>Mawar dari pita satin berkilau dalam warna pilihanmu, awet disimpan sebagai kenang-kenangan.</p>
+          <div class="chips"><span>Anniversary</span><span>Wisuda</span><span>Valentine</span></div>
+          <a class="more" href="#pesan" data-product="Buket Pita Satin">Pesan model ini <span>→</span></a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="art t3">
+          <svg viewBox="0 0 300 340" role="img" aria-label="Ilustrasi buket bunga artificial">
+            <g fill="#7fb7a2">
+              <ellipse cx="150" cy="170" rx="11" ry="46" transform="rotate(-60 150 250) translate(0 0)"/>
+              <ellipse cx="150" cy="170" rx="11" ry="46" transform="rotate(60 150 250)"/>
+              <ellipse cx="150" cy="160" rx="11" ry="50" transform="rotate(-36 150 250)"/>
+              <ellipse cx="150" cy="160" rx="11" ry="50" transform="rotate(36 150 250)"/>
+            </g>
+            <use href="#leaf" x="130" y="150" width="40" height="100" transform="rotate(-18 150 250)" style="--leaf:#4f9a62"/>
+            <use href="#leaf" x="130" y="150" width="40" height="100" transform="rotate(18 150 250)" style="--leaf:#4f9a62"/>
+            <use href="#daisy" class="c-white" x="56" y="108" width="72" height="72"/>
+            <use href="#daisy" class="c-white" x="176" y="112" width="68" height="68"/>
+            <use href="#rose" class="c-peach" x="108" y="56" width="84" height="84"/>
+            <use href="#rose" class="c-lilac" x="80" y="146" width="74" height="74"/>
+            <use href="#daisy" class="c-sky" x="156" y="150" width="62" height="62"/>
+            <use href="#rose" class="c-pink" x="124" y="126" width="64" height="64"/>
+            <g fill="#fff"><circle cx="70" cy="96" r="4"/><circle cx="92" cy="72" r="3"/><circle cx="220" cy="92" r="4"/><circle cx="198" cy="68" r="3"/><circle cx="52" cy="150" r="3"/><circle cx="250" cy="150" r="3"/><circle cx="150" cy="44" r="4"/></g>
+            <path d="M60 188 Q150 158 240 188 L180 318 Q150 330 120 318Z" fill="#d9b88c"/>
+            <path d="M84 206 Q150 190 216 206 L170 322 Q150 332 130 322Z" fill="#f2dcc0"/>
+            <path d="M104 250 Q150 266 196 250 L192 268 Q150 284 108 268Z" fill="#fff"/>
+            <circle cx="150" cy="262" r="9" fill="#f08aa5"/>
+            <use href="#spark" x="44" y="58" width="20" height="20"/><use href="#spark" x="248" y="52" width="20" height="20"/>
+          </svg>
+        </div>
+        <div class="body">
+          <span class="kicker">Buket Artificial</span>
+          <h3>Segar selamanya, tanpa layu</h3>
+          <p>Perpaduan bunga artificial yang tampak hidup, tahan lama, dan cantik dipajang di rumah.</p>
+          <div class="chips"><span>Dekorasi</span><span>Hadiah</span><span>Lamaran</span></div>
+          <a class="more" href="#pesan" data-product="Buket Artificial">Pesan model ini <span>→</span></a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="art t4">
+          <svg viewBox="0 0 300 340" role="img" aria-label="Ilustrasi karangan bunga di atas standar">
+            <path d="M70 332 L108 236 M230 332 L192 236 M150 332 L150 250" stroke="#b08a63" stroke-width="7" stroke-linecap="round"/>
+            <rect x="48" y="34" width="204" height="212" rx="8" fill="#fffdf9" stroke="#c9973f" stroke-width="4"/>
+            <use href="#leaf" x="46" y="30" width="34" height="70" transform="rotate(-40 63 66)" style="--leaf:#4f9a62"/>
+            <use href="#leaf" x="222" y="30" width="34" height="70" transform="rotate(40 237 66)" style="--leaf:#4f9a62"/>
+            <use href="#rose" class="c-red" x="34" y="24" width="60" height="60"/>
+            <use href="#rose" class="c-blush" x="82" y="22" width="44" height="44"/>
+            <use href="#rose" class="c-pink" x="30" y="78" width="46" height="46"/>
+            <use href="#rose" class="c-pink" x="206" y="24" width="60" height="60"/>
+            <use href="#rose" class="c-cream" x="174" y="22" width="44" height="44"/>
+            <use href="#rose" class="c-lilac" x="224" y="78" width="46" height="46"/>
+            <use href="#leaf" x="60" y="196" width="34" height="60" transform="rotate(70 77 236)" style="--leaf:#4f9a62"/>
+            <use href="#leaf" x="206" y="196" width="34" height="60" transform="rotate(-70 223 236)" style="--leaf:#4f9a62"/>
+            <use href="#rose" class="c-peach" x="52" y="206" width="54" height="54"/>
+            <use href="#rose" class="c-red" x="122" y="214" width="58" height="58"/>
+            <use href="#rose" class="c-blush" x="194" y="206" width="54" height="54"/>
+            <text x="150" y="104" text-anchor="middle" font-size="32" fill="#b1204f" style="font-family:'Pinyon Script',cursive">Grand Opening</text>
+            <path d="M62 120 H238 L228 142 L238 164 H62 L72 142Z" fill="#c9304f"/>
+            <text x="150" y="147" text-anchor="middle" font-size="12.5" fill="#fff" letter-spacing="2.4" font-weight="500" style="font-family:'Jost',sans-serif">SELAMAT &amp; SUKSES</text>
+            <text x="150" y="190" text-anchor="middle" font-size="13" font-style="italic" fill="#5a2236" style="font-family:'Bodoni Moda',serif">semoga lancar selalu</text>
+          </svg>
+        </div>
+        <div class="body">
+          <span class="kicker">Karangan Bunga</span>
+          <h3>Ucapan megah untuk hari besar</h3>
+          <p>Karangan bunga berdiri lengkap dengan papan dan tulisan, siap menyemarakkan acara.</p>
+          <div class="chips"><span>Grand opening</span><span>Duka cita</span><span>Pernikahan</span></div>
+          <a class="more" href="#pesan" data-product="Karangan Bunga">Pesan model ini <span>→</span></a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="art t5">
+          <svg viewBox="0 0 300 340" role="img" aria-label="Ilustrasi papan ucapan">
+            <path d="M112 290 L92 334 M188 290 L208 334" stroke="#b08a63" stroke-width="7" stroke-linecap="round"/>
+            <rect x="60" y="22" width="180" height="270" rx="10" fill="#fffdf9" stroke="#c9973f" stroke-width="4"/>
+            <rect x="71" y="33" width="158" height="248" rx="5" fill="none" stroke="#c9973f" stroke-width="1.2"/>
+            <text x="150" y="122" text-anchor="middle" font-size="44" fill="#b1204f" style="font-family:'Pinyon Script',cursive">Selamat</text>
+            <text x="150" y="154" text-anchor="middle" font-size="16" font-style="italic" fill="#5a2236" style="font-family:'Bodoni Moda',serif">atas kelulusanmu</text>
+            <path d="M118 172 H182" stroke="#c9973f" stroke-width="1.5"/>
+            <text x="150" y="196" text-anchor="middle" font-size="10.5" letter-spacing="2" fill="#8c6a2c" style="font-family:'Jost',sans-serif">SEMOGA ILMUNYA BERKAH</text>
+            <use href="#leaf" x="40" y="14" width="34" height="66" transform="rotate(-45 57 50)" style="--leaf:#4f9a62"/>
+            <use href="#rose" class="c-pink" x="38" y="10" width="62" height="62"/>
+            <use href="#rose" class="c-cream" x="86" y="14" width="40" height="40"/>
+            <use href="#rose" class="c-lilac" x="34" y="62" width="42" height="42"/>
+            <use href="#leaf" x="226" y="240" width="34" height="66" transform="rotate(135 243 276)" style="--leaf:#4f9a62"/>
+            <use href="#rose" class="c-red" x="200" y="236" width="62" height="62"/>
+            <use href="#rose" class="c-blush" x="176" y="250" width="40" height="40"/>
+            <use href="#rose" class="c-peach" x="226" y="196" width="42" height="42"/>
+          </svg>
+        </div>
+        <div class="body">
+          <span class="kicker">Papan Ucapan</span>
+          <h3>Kata-kata yang tampil cantik</h3>
+          <p>Papan ucapan dengan tulisan sesuai pesanmu, dihias bunga di sudut-sudutnya.</p>
+          <div class="chips"><span>Wisuda</span><span>Selamat menikah</span><span>Ulang tahun</span></div>
+          <a class="more" href="#pesan" data-product="Papan Ucapan">Pesan model ini <span>→</span></a>
+        </div>
+      </article>
+
+      <article class="card custom">
+        <div class="art">
+          <svg viewBox="0 0 200 200" role="img" aria-label="Ilustrasi mawar emas dengan kilau">
+            <use href="#rose" class="c-gold" x="46" y="46" width="108" height="108"/>
+            <use href="#spark" x="14" y="26" width="34" height="34"/>
+            <use href="#spark" x="150" y="14" width="26" height="26"/>
+            <use href="#spark" x="158" y="140" width="30" height="30"/>
+            <use href="#spark" x="20" y="148" width="20" height="20"/>
+          </svg>
+        </div>
+        <div class="body">
+          <span class="kicker">Request Custom</span>
+          <h3>Punya ide sendiri?</h3>
+          <p>Ceritakan warna, tema, dan budget lewat chat. Kami bantu rancang rangkaian yang paling sesuai.</p>
+          <a class="more" href="#pesan" data-product="Request Custom">Ceritakan idemu <span>→</span></a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="pesan">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow">Susun pesanan</span>
+        <h2>Tulis ucapanmu, <em>lihat</em> hasilnya</h2>
+      </div>
+      <p>Isi detailnya di sini. Pratinjau papan ikut berubah, lalu pesanmu terkirim rapi lewat WhatsApp.</p>
+    </div>
+
+    <div class="build">
+      <form class="form" id="orderForm" autocomplete="off">
+        <div class="field full">
+          <label for="fProduk">Produk</label>
+          <select id="fProduk">
+            <option>Buket Uang</option><option>Buket Pita Satin</option><option>Buket Artificial</option>
+            <option>Karangan Bunga</option><option selected>Papan Ucapan</option><option>Request Custom</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fAcara">Untuk acara</label>
+          <select id="fAcara">
+            <option>Wisuda</option><option>Ulang tahun</option><option>Anniversary</option><option>Pernikahan</option>
+            <option>Lamaran</option><option>Grand opening</option><option>Duka cita</option><option>Lainnya</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fTanggal">Dibutuhkan tanggal</label>
+          <input id="fTanggal" type="date">
+        </div>
+        <div class="field">
+          <label for="fUntuk">Untuk (nama penerima)</label>
+          <input id="fUntuk" type="text" maxlength="40" placeholder="contoh: Dinda">
+        </div>
+        <div class="field">
+          <label for="fDari">Dari (pengirim)</label>
+          <input id="fDari" type="text" maxlength="40" placeholder="contoh: Keluarga Besar">
+        </div>
+        <div class="field full">
+          <label for="fTulis">Tulisan pada papan atau kartu</label>
+          <textarea id="fTulis" maxlength="90" placeholder="contoh: Selamat atas kelulusanmu, semoga sukses selalu!"></textarea>
+          <span class="hint"><span id="cnt">0</span>/90</span>
+        </div>
+        <div class="field full">
+          <label for="fBudget">Perkiraan budget (opsional)</label>
+          <input id="fBudget" type="text" maxlength="40" placeholder="contoh: 300 ribu">
+        </div>
+      </form>
+
+      <div class="stage">
+        <div class="board" id="board" aria-live="polite">
+          <svg class="rose-c rc1 c-pink" viewBox="0 0 100 100" aria-hidden="true"><use href="#rose" width="100" height="100"/></svg>
+          <svg class="rose-c rc3 c-cream" viewBox="0 0 100 100" aria-hidden="true"><use href="#rose" width="100" height="100"/></svg>
+          <svg class="rose-c rc2 c-red" viewBox="0 0 100 100" aria-hidden="true"><use href="#rose" width="100" height="100"/></svg>
+          <svg class="rose-c rc4 c-lilac" viewBox="0 0 100 100" aria-hidden="true"><use href="#rose" width="100" height="100"/></svg>
+          <div class="bh" id="pvHead">Selamat Wisuda</div>
+          <div class="rule"></div>
+          <div class="bt ph" id="pvText">Selamat atas kelulusanmu, semoga sukses selalu!</div>
+          <div class="bf" id="pvFrom">Dari: nama kamu</div>
+        </div>
+        <div class="msgbox"><pre id="msgOut"></pre></div>
+        <div class="actions">
+          <a class="btn p" id="waSend" href="https://wa.me/" target="_blank" rel="noopener">Kirim lewat WhatsApp</a>
+          <button class="btn s" type="button" id="copyBtn">Salin pesan</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cara">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow">Cara pesan</span>
+        <h2>Empat langkah, <em>beres</em></h2>
+      </div>
+      <p>Tanpa ribet. Cukup chat, kami urus sisanya.</p>
+    </div>
+    <ol class="steps">
+      <li><h3>Pilih rangkaian</h3><p>Tentukan jenis buket, karangan bunga, atau papan ucapan yang kamu mau.</p></li>
+      <li><h3>Kirim detail</h3><p>Isi formulir di atas atau ceritakan acara, warna, tulisan, dan tanggalnya lewat chat.</p></li>
+      <li><h3>Konfirmasi</h3><p>Kami balas dengan pilihan model, harga, dan cara pembayaran.</p></li>
+      <li><h3>Terima hasilnya</h3><p>Rangkaian selesai tepat waktu dan siap diambil atau diantar.</p></li>
+    </ol>
+  </section>
+
+  <div class="closing">
+    <div>
+      <h2>Siap merangkai <em>kejutan manis?</em></h2>
+      <p>Satu pesan singkat sudah cukup untuk memulai. Sebutkan acaranya, kami bantu sisanya.</p>
+      <a class="btn" data-wa="Halo Pingkan Buket, saya mau pesan buket. Boleh minta info lengkapnya?" href="https://wa.me/" target="_blank" rel="noopener">Chat sekarang</a>
+    </div>
+    <div class="art2" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <use href="#rose" class="c-blush" x="40" y="40" width="120" height="120"/>
+        <use href="#spark" x="8" y="20" width="36" height="36"/>
+        <use href="#spark" x="156" y="10" width="28" height="28"/>
+        <use href="#spark" x="160" y="150" width="32" height="32"/>
+      </svg>
+    </div>
+  </div>
+
+  <footer>
+    <span class="fl">Pingkan Buket</span>
+    <span>Buket uang · Pita satin · Artificial · Karangan bunga · Papan ucapan</span>
+    <span>© 2026 Pingkan Buket</span>
+  </footer>
+</main>
+
+<a class="btn p fab" data-wa="Halo Pingkan Buket, saya mau pesan buket. Boleh minta info lengkapnya?" href="https://wa.me/" target="_blank" rel="noopener">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.3 7.6L3 21l1.5-5.4A8.5 8.5 0 1 1 21 12Z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg>
+  Pesan sekarang
+</a>
+
+<script>
+(function () {
+  // Isi dengan nomor WhatsApp dalam format internasional tanpa tanda plus, contoh: "6281234567890"
+  var WA_NUMBER = "";
+  var base = WA_NUMBER ? "https://wa.me/" + WA_NUMBER : "https://wa.me/";
+  function wa(text) { return base + "?text=" + encodeURIComponent(text); }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-wa]"), function (a) {
+    a.href = wa(a.getAttribute("data-wa"));
+  });
+
+  var $ = function (id) { return document.getElementById(id); };
+  var fProduk = $("fProduk"), fAcara = $("fAcara"), fTanggal = $("fTanggal"), fUntuk = $("fUntuk"),
+      fDari = $("fDari"), fTulis = $("fTulis"), fBudget = $("fBudget");
+  var pvHead = $("pvHead"), pvText = $("pvText"), pvFrom = $("pvFrom"), out = $("msgOut"),
+      send = $("waSend"), copyBtn = $("copyBtn"), cnt = $("cnt");
+
+  var heads = {
+    "Wisuda": "Selamat Wisuda", "Ulang tahun": "Selamat Ulang Tahun", "Anniversary": "Happy Anniversary",
+    "Pernikahan": "Selamat Menikah", "Lamaran": "Selamat Bertunangan", "Grand opening": "Grand Opening",
+    "Duka cita": "Turut Berduka Cita", "Lainnya": "Selamat"
+  };
+  var example = {
+    "Wisuda": "Selamat atas kelulusanmu, semoga sukses selalu!",
+    "Ulang tahun": "Panjang umur, sehat selalu, dan bahagia terus.",
+    "Anniversary": "Terima kasih untuk setiap cerita kita.",
+    "Pernikahan": "Semoga samawa dan bahagia selamanya.",
+    "Lamaran": "Semoga lancar menuju hari bahagia.",
+    "Grand opening": "Semoga usahanya lancar dan berkah.",
+    "Duka cita": "Semoga keluarga diberi ketabahan.",
+    "Lainnya": "Tulis ucapan terbaikmu di sini."
+  };
+
+  function fmtDate(v) {
+    if (!v) return "";
+    var p = v.split("-");
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    try { return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }); }
+    catch (e) { return v; }
+  }
+
+  function update() {
+    var acara = fAcara.value, tulis = fTulis.value.trim(), untuk = fUntuk.value.trim(),
+        dari = fDari.value.trim(), budget = fBudget.value.trim(), tgl = fTanggal.value;
+
+    cnt.textContent = fTulis.value.length;
+    pvHead.textContent = heads[acara] || "Selamat";
+    var shown = tulis || example[acara];
+    pvText.textContent = shown;
+    pvText.className = "bt" + (tulis ? "" : " ph") + (shown.length > 60 ? " xs" : shown.length > 36 ? " sm" : "");
+    pvFrom.textContent = dari ? "Dari: " + dari : "Dari: nama kamu";
+
+    var lines = ["Halo Pingkan Buket, saya mau pesan:", "- Produk: " + fProduk.value, "- Acara: " + acara];
+    if (untuk) lines.push("- Untuk: " + untuk);
+    if (tulis) lines.push("- Tulisan: \"" + tulis + "\"");
+    if (dari) lines.push("- Dari: " + dari);
+    if (tgl) lines.push("- Dibutuhkan tanggal: " + fmtDate(tgl));
+    if (budget) lines.push("- Budget: " + budget);
+    lines.push("Mohon info ketersediaan dan harganya ya. Terima kasih!");
+    var msg = lines.join("\n");
+    out.textContent = msg;
+    send.href = wa(msg);
+  }
+
+  [fProduk, fAcara, fTanggal, fUntuk, fDari, fTulis, fBudget].forEach(function (el) {
+    el.addEventListener("input", update);
+    el.addEventListener("change", update);
+  });
+  $("orderForm").addEventListener("submit", function (e) { e.preventDefault(); });
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-product]"), function (a) {
+    a.addEventListener("click", function () {
+      fProduk.value = a.getAttribute("data-product");
+      update();
+    });
+  });
+
+  var timer;
+  function flash(t) {
+    copyBtn.textContent = t;
+    clearTimeout(timer);
+    timer = setTimeout(function () { copyBtn.textContent = "Salin pesan"; }, 2200);
+  }
+  function selectText() {
+    var r = document.createRange(); r.selectNodeContents(out);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    flash("Teks terpilih, salin manual");
+  }
+  copyBtn.addEventListener("click", function () {
+    try {
+      navigator.clipboard.writeText(out.textContent).then(function () { flash("Tersalin"); }, selectText);
+    } catch (e) { selectText(); }
+  });
+
+  update();
+})();
+</script>
+
+</body></html>
